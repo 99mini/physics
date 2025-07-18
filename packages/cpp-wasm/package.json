@@ -1,0 +1,33 @@
+{
+  "name": "cpp-wasm",
+  "version": "0.1.0",
+  "description": "C++ to WebAssembly compilation package",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "pnpm run build:wasm && rollup -c rollup.config.cjs --bundleConfigAsCjs -w",
+    "build": "pnpm run build:wasm && pnpm run build:js",
+    "build:wasm": "mkdir -p dist && emcc src/math.cpp -o dist/math.js -s EXPORTED_FUNCTIONS='[\"_add\", \"_multiply\", \"_calculateVelocity\"]' -s EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\"]' -s MODULARIZE=1 -s EXPORT_NAME='MathModule'",
+    "build:js": "rollup -c rollup.config.cjs --bundleConfigAsCjs",
+    "clean": "rm -rf dist"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "@rollup/plugin-typescript": "^12.1.4",
+    "rollup": "^4.45.1",
+    "tslib": "^2.8.1"
+  }
+}

@@ -1,0 +1,62 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js 20.x for corepack
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
+      - name: Enable Corepack and Set Pnpm Version
+        run: |
+          npm install -g corepack@latest
+          corepack enable
+
+      - name: Setup Node.js 20.x for pnpm
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build apps/physics
+        run: pnpm run --filter physics build
+
+      - name: Deploy to GitHub Pages
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # 새로운 임시 디렉토리 생성
+          mkdir -p /tmp/github-pages
+
+          # dist 폴더의 내용을 임시 디렉토리로 복사
+          cp -r apps/physics/dist/* /tmp/github-pages/
+
+          # github-page 브랜치로 전환 (없으면 생성)
+          git checkout github-page
+
+          # 브랜치 내용 모두 삭제 (단, .git 폴더는 유지)
+          find . -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} \;
+
+          # 임시 디렉토리의 내용을 현재 디렉토리로 복사
+          cp -r /tmp/github-pages/* .
+
+          # 모든 변경사항 추가 및 커밋
+          git add .
+          git commit -m "Deploy to GitHub Pages"
+
+          # github-page 브랜치에 강제 푸시
+          git push origin github-page --force

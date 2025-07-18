@@ -15,7 +15,7 @@
   "scripts": {
     "dev": "pnpm run build:wasm && rollup -c rollup.config.cjs --bundleConfigAsCjs -w",
     "build": "pnpm run build:wasm && pnpm run build:js",
-    "build:wasm": "mkdir -p dist && emcc src/math.cpp -o dist/math.js -s EXPORTED_FUNCTIONS='[\"_add\", \"_multiply\", \"_calculateVelocity\"]' -s EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\"]' -s MODULARIZE=1 -s EXPORT_NAME='MathModule'",
+    "build:wasm": "mkdir -p complie && emcc src/math.cpp -o complie/math.js -s EXPORTED_FUNCTIONS='[\"_add\", \"_multiply\", \"_calculateVelocity\"]' -s EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\"]' -s MODULARIZE=1 -s EXPORT_NAME='MathModule'",
     "build:js": "rollup -c rollup.config.cjs --bundleConfigAsCjs",
     "clean": "rm -rf dist"
   },

@@ -21,7 +21,7 @@ const moduleLoader = async (): Promise<MathWasmModule> => {
       return await window.MathModule();
     } else {
       // @ts-ignore
-      const MathModule = (await import("../dist/math.js")).default;
+      const MathModule = (await import("../complie/math.js")).default;
       return MathModule();
     }
   } catch (error) {

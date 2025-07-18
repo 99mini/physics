@@ -48,7 +48,7 @@ jobs:
           cp -r apps/physics/dist/* /tmp/github-pages/
 
           # github-page 브랜치로 전환 (없으면 생성)
-          git checkout github-page
+          git checkout github-page || git checkout -b github-page
 
           # 브랜치 내용 모두 삭제 (단, .git 폴더는 유지)
           find . -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} \;

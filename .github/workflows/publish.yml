@@ -42,7 +42,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://github-actions[bot]:${{ secrets.GITHUB_TOKEN }}@github.com/99mini/physics.git
 
           # 새로운 임시 디렉토리 생성
           mkdir -p /tmp/github-pages

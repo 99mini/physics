@@ -63,4 +63,4 @@ jobs:
           git commit -m "Deploy to GitHub Pages"
 
           # github-page 브랜치에 강제 푸시
-          git push --force-with-lease origin github-page
+          git push origin github-page --force

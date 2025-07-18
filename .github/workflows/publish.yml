@@ -31,8 +31,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build apps/physics
-        run: pnpm run --filter physics build
+      - name: Build apps/physics & packages/cpp-wasm
+        run: |
+          pnpm run --filter physics build
+          pnpm run --filter cpp-wasm build:js
 
       - name: Deploy to GitHub Pages
         run: |

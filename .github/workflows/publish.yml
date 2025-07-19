@@ -17,6 +17,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Setup Node.js 20.x for corepack
         uses: actions/setup-node@v4
@@ -51,6 +54,7 @@ jobs:
 
           # 현재 날짜를 YYMMDD 형식으로 가져오기
           CURRENT_DATE=$(date '+%y%m%d')
+          echo "CURRENT_DATE=$CURRENT_DATE"
 
           # 마지막 태그 가져오기
           LAST_TAG=$(git describe --tags --abbrev=0)

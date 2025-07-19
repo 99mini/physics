@@ -36,6 +36,33 @@ jobs:
           pnpm run --filter cpp-wasm build:js
           pnpm run --filter physics build
 
+      - name: Generate release commit message
+        id: generate_commit_msg
+        run: |
+          PKG_VERSION=$(pnpm run --filter physics version)
+
+          # 현재 날짜를 YYMMDD 형식으로 가져오기
+          CURRENT_DATE=$(date '+%y%m%d')
+
+          # 마지막 커밋 메시지 가져오기
+          LAST_COMMIT_MSG=$(git log -1 --pretty=%B 2>/dev/null || echo "")
+
+          Z_VALUE=1
+
+          if [[ "$LAST_COMMIT_MSG" =~ release:\ ([0-9]+\.[0-9]+\.[0-9]+)-([0-9]{6})\.([0-9]+) ]]; then
+            LAST_VERSION="${BASH_REMATCH[1]}"
+            LAST_DATE="${BASH_REMATCH[2]}"
+            LAST_Z="${BASH_REMATCH[3]}"
+            
+            # 버전이 같고 날짜도 같은 경우에만 z 값 증가
+            if [ "$LAST_VERSION" == "$PKG_VERSION" ] && [ "$LAST_DATE" == "$CURRENT_DATE" ]; then
+              Z_VALUE=$((LAST_Z + 1))
+            fi
+          fi
+
+          COMMIT_MSG="release: ${PKG_VERSION}-${CURRENT_DATE}.${Z_VALUE}"
+          echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
+
       - name: Deploy to GitHub Pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -60,7 +87,7 @@ jobs:
 
           # 모든 변경사항 추가 및 커밋
           git add .
-          git commit -m "Deploy to GitHub Pages"
+          git commit -m "${{ steps.generate_commit_msg.outputs.commit_msg }}"
 
           # github-page 브랜치에 강제 푸시
           git push origin github-page --force

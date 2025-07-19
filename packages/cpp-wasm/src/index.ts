@@ -17,15 +17,15 @@ declare global {
 // 동적으로 모듈 로드
 const moduleLoader = async (): Promise<MathWasmModule> => {
   try {
-    if (typeof window !== "undefined" && window.MathModule) {
+    if (typeof window !== 'undefined' && window.MathModule) {
       return await window.MathModule();
     } else {
       // @ts-ignore
-      const MathModule = (await import("../complie/math.js")).default;
+      const MathModule = (await import('../complie/math.js')).default;
       return MathModule();
     }
   } catch (error) {
-    console.error("WASM 모듈 로드 실패:", error);
+    console.error('WASM 모듈 로드 실패:', error);
     throw error;
   }
 };
@@ -38,15 +38,15 @@ export class MathWasm {
     if (this.module) return;
 
     try {
-      console.log("WASM 모듈 초기화 중...");
+      console.log('WASM 모듈 초기화 중...');
 
       // 모듈 로더를 통해 WASM 모듈 로드
       this.module = await moduleLoader();
-      console.log("WASM 모듈 로드됨:", this.module);
+      console.log('WASM 모듈 로드됨:', this.module);
 
-      console.log("WASM 모듈 초기화 완료");
+      console.log('WASM 모듈 초기화 완료');
     } catch (error) {
-      console.error("WASM 모듈 초기화 실패:", error);
+      console.error('WASM 모듈 초기화 실패:', error);
       throw error;
     }
   }
@@ -54,26 +54,26 @@ export class MathWasm {
   // 두 수를 더하는 함수
   add(a: number, b: number): number {
     if (!this.module) {
-      throw new Error("WASM 모듈이 초기화되지 않았습니다. initialize()를 먼저 호출하세요.");
+      throw new Error('WASM 모듈이 초기화되지 않았습니다. initialize()를 먼저 호출하세요.');
     }
 
-    return this.module.ccall("add", "number", ["number", "number"], [a, b]);
+    return this.module.ccall('add', 'number', ['number', 'number'], [a, b]);
   }
 
   // 두 수를 곱하는 함수
   multiply(a: number, b: number): number {
     if (!this.module) {
-      throw new Error("WASM 모듈이 초기화되지 않았습니다. initialize()를 먼저 호출하세요.");
+      throw new Error('WASM 모듈이 초기화되지 않았습니다. initialize()를 먼저 호출하세요.');
     }
-    return this.module.ccall("multiply", "number", ["number", "number"], [a, b]);
+    return this.module.ccall('multiply', 'number', ['number', 'number'], [a, b]);
   }
 
   // 속도 계산 함수
   calculateVelocity(distance: number, time: number): number {
     if (!this.module) {
-      throw new Error("WASM 모듈이 초기화되지 않았습니다. initialize()를 먼저 호출하세요.");
+      throw new Error('WASM 모듈이 초기화되지 않았습니다. initialize()를 먼저 호출하세요.');
     }
-    return this.module.ccall("calculateVelocity", "number", ["number", "number"], [distance, time]);
+    return this.module.ccall('calculateVelocity', 'number', ['number', 'number'], [distance, time]);
   }
 }
 

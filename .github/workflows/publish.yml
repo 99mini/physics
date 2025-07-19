@@ -52,13 +52,13 @@ jobs:
           # 현재 날짜를 YYMMDD 형식으로 가져오기
           CURRENT_DATE=$(date '+%y%m%d')
 
-          # 마지막 커밋 메시지 가져오기
-          LAST_COMMIT_MSG=$(git log origin/github-page -1 --pretty=%B 2>/dev/null || echo "")
-          echo "LAST_COMMIT_MSG=$LAST_COMMIT_MSG"
+          # 마지막 태그 가져오기
+          LAST_TAG=$(git describe --tags --abbrev=0)
+          echo "LAST_TAG=$LAST_TAG"
 
           Z_VALUE=1
 
-          if [[ "$LAST_COMMIT_MSG" =~ release:[[:space:]]v([0-9]+\.[0-9]+\.[0-9]+)-([0-9]{6})\.([0-9]+) ]]; then
+          if [[ "$LAST_TAG" =~ v([0-9]+\.[0-9]+\.[0-9]+)-([0-9]{6})\.([0-9]+) ]]; then
             LAST_VERSION=${BASH_REMATCH[1]}
             LAST_DATE=${BASH_REMATCH[2]}
             LAST_Z=${BASH_REMATCH[3]}
@@ -89,8 +89,16 @@ jobs:
           # dist 폴더의 내용을 임시 디렉토리로 복사
           cp -r apps/physics/dist/* /tmp/github-pages/
 
-          # github-page 브랜치로 전환 (없으면 생성)
-          git checkout github-page || git checkout -b github-page
+          # github-page 브랜치가 있는지 확인
+          if git show-ref --verify --quiet refs/remotes/origin/github-page; then
+            # 브랜치가 존재하면 체크아웃
+            git checkout github-page
+          else
+            # 브랜치가 존재하지 않으면 orphan 브랜치 생성 (부모 없는 새 브랜치)
+            git checkout --orphan github-page
+            # 스테이징된 모든 파일 제거
+            git rm -rf .
+          fi
 
           # 브랜치 내용 모두 삭제 (단, .git 폴더는 유지)
           find . -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} \;

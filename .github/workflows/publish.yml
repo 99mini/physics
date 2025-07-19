@@ -66,8 +66,8 @@ jobs:
             fi
           fi
 
-          COMMIT_MSG="release: v${PKG_VERSION}-${CURRENT_DATE}.${Z_VALUE}"
-          echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          VERSION="v${PKG_VERSION}-${CURRENT_DATE}.${Z_VALUE}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Deploy to GitHub Pages
         env:
@@ -93,7 +93,7 @@ jobs:
 
           # 모든 변경사항 추가 및 커밋
           git add .
-          git commit -m "${{ steps.generate_commit_msg.outputs.commit_msg }}"
+          git commit -m "release: ${{ steps.generate_commit_msg.outputs.version }}"
 
           # github-page 브랜치에 강제 푸시
           git push origin github-page --force
@@ -105,8 +105,8 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          name: ${{ steps.generate_commit_msg.outputs.commit_msg }}
-          tag_name: ${{ steps.generate_commit_msg.outputs.commit_msg }}
+          name: "release: ${{ steps.generate_commit_msg.outputs.version }}"
+          tag_name: ${{ steps.generate_commit_msg.outputs.version }}
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

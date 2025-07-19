@@ -1,4 +1,4 @@
-name: Publish
+name: Publish (Push github-page branch)
 
 on:
   push:
@@ -8,6 +8,12 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -60,7 +66,7 @@ jobs:
             fi
           fi
 
-          COMMIT_MSG="release: ${PKG_VERSION}-${CURRENT_DATE}.${Z_VALUE}"
+          COMMIT_MSG="release: v${PKG_VERSION}-${CURRENT_DATE}.${Z_VALUE}"
           echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
 
       - name: Deploy to GitHub Pages
@@ -91,3 +97,16 @@ jobs:
 
           # github-page 브랜치에 강제 푸시
           git push origin github-page --force
+
+      - name: Checkout main branch
+        run: git checkout main
+
+      - name: Create release note
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ steps.generate_commit_msg.outputs.commit_msg }}
+          tag_name: ${{ steps.generate_commit_msg.outputs.commit_msg }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

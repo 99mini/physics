@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js 20.x for corepack
         uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
+          node-version: '20.x'
 
       - name: Enable Corepack and Set Pnpm Version
         run: |
@@ -31,7 +31,7 @@ jobs:
       - name: Setup Node.js 20.x for pnpm
         uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
+          node-version: '20.x'
           cache: pnpm
 
       - name: Install dependencies
@@ -47,18 +47,25 @@ jobs:
         run: |
           PKG_VERSION=$(node -p "require('./apps/physics/package.json').version")
 
+          echo "PKG_VERSION=$PKG_VERSION"
+
           # 현재 날짜를 YYMMDD 형식으로 가져오기
           CURRENT_DATE=$(date '+%y%m%d')
 
           # 마지막 커밋 메시지 가져오기
-          LAST_COMMIT_MSG=$(git log -1 --pretty=%B 2>/dev/null || echo "")
+          LAST_COMMIT_MSG=$(git log origin/github-page -1 --pretty=%B 2>/dev/null || echo "")
+          echo "LAST_COMMIT_MSG=$LAST_COMMIT_MSG"
 
           Z_VALUE=1
 
-          if [[ "$LAST_COMMIT_MSG" =~ release:\ ([0-9]+\.[0-9]+\.[0-9]+)-([0-9]{6})\.([0-9]+) ]]; then
-            LAST_VERSION="${BASH_REMATCH[1]}"
-            LAST_DATE="${BASH_REMATCH[2]}"
-            LAST_Z="${BASH_REMATCH[3]}"
+          if [[ "$LAST_COMMIT_MSG" =~ release:[[:space:]]v([0-9]+\.[0-9]+\.[0-9]+)-([0-9]{6})\.([0-9]+) ]]; then
+            LAST_VERSION=${BASH_REMATCH[1]}
+            LAST_DATE=${BASH_REMATCH[2]}
+            LAST_Z=${BASH_REMATCH[3]}
+
+            echo "LAST_VERSION=$LAST_VERSION"
+            echo "LAST_DATE=$LAST_DATE"
+            echo "LAST_Z=$LAST_Z"
             
             # 버전이 같고 날짜도 같은 경우에만 z 값 증가
             if [ "$LAST_VERSION" == "$PKG_VERSION" ] && [ "$LAST_DATE" == "$CURRENT_DATE" ]; then
@@ -105,7 +112,7 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          name: "release: ${{ steps.generate_commit_msg.outputs.version }}"
+          name: 'release: ${{ steps.generate_commit_msg.outputs.version }}'
           tag_name: ${{ steps.generate_commit_msg.outputs.version }}
           generate_release_notes: true
         env:

@@ -73,6 +73,7 @@ jobs:
             
             # 버전이 같고 날짜도 같은 경우에만 z 값 증가
             if [ "$LAST_VERSION" == "$PKG_VERSION" ] && [ "$LAST_DATE" == "$CURRENT_DATE" ]; then
+              echo "update z version $LAST_Z -> $((LAST_Z + 1))"
               Z_VALUE=$((LAST_Z + 1))
             fi
           fi

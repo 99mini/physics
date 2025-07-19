@@ -1,8 +1,9 @@
 {
   "name": "physics",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
+  "homepage": "https://99mini.github.io/physics",
   "scripts": {
     "pre:dev": "sh ./.script/cp-wasm.sh",
     "dev": "pnpm run pre:dev && vite",
